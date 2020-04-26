@@ -187,27 +187,19 @@ spec:
     spec:
       containers:
         - name: kubernetes-dashboard
-          image: kubernetesui/dashboard:v2.0.0-beta8
+          image: kubernetesui/dashboard:v2.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8443
               protocol: TCP
-          env:
-            - name: KUBERNETES_SERVICE_HOST
-              value: 192.168.0.254
-            - name: KUBERNETES_PORT
-              value: tcp://192.168.0.254:6443
-            - name: KUBERNETES_PORT_443_TCP_PORT
-              value: "6443"
-            - name: KUBERNETES_PORT_443_TCP_ADDR
-              value: 192.168.0.254
-            - name: KUBERNETES_PORT_443_TCP
-              value: tcp://192.168.0.254:6443
           args:
             - --auto-generate-certificates
             - --namespace=kubernetes-dashboard
             - --token-ttl=0
-            - --apiserver-host=https://192.168.0.254:6443
+            # Uncomment the following line to manually specify Kubernetes API server Host
+            # If not specified, Dashboard will attempt to auto discover the API server and connect
+            # to it. Uncomment only if the default does not work.
+            # - --apiserver-host=http://my-address:port
           volumeMounts:
             - name: kubernetes-dashboard-certs
               mountPath: /certs
@@ -234,7 +226,7 @@ spec:
           emptyDir: {}
       serviceAccountName: kubernetes-dashboard
       nodeSelector:
-        "beta.kubernetes.io/os": linux
+        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -280,7 +272,7 @@ spec:
     spec:
       containers:
         - name: dashboard-metrics-scraper
-          image: kubernetesui/metrics-scraper:v1.0.1
+          image: kubernetesui/metrics-scraper:v1.0.4
           ports:
             - containerPort: 8000
               protocol: TCP
@@ -301,7 +293,7 @@ spec:
             runAsGroup: 2001
       serviceAccountName: kubernetes-dashboard
       nodeSelector:
-        "beta.kubernetes.io/os": linux
+        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master
