@@ -87,7 +87,7 @@ $configureMaster = <<-SCRIPT
 
     # install k8s master
     HOST_NAME=$(hostname -s)
-    kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
+    kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=10.244.0.0/16
 
     #copying credentials to regular user - vagrant
     sudo --user=vagrant mkdir -p /home/vagrant/.kube
@@ -96,10 +96,8 @@ $configureMaster = <<-SCRIPT
 
     # install Calico pod network addon
     export KUBECONFIG=/etc/kubernetes/admin.conf
-    kubectl apply -f https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/rbac-kdd.yaml
-    kubectl apply -f https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/calico.yaml
 
-    # https://github.com/kubernetes/kubeadm/issues/1031
+    # https://medium.com/@ErrInDam/taming-kubernetes-for-fun-and-profit-60a1d7b353de
     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
     kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
@@ -114,6 +112,10 @@ $configureNode = <<-SCRIPT
     echo "This is worker"
     apt-get install -y sshpass
     sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.0.254:/etc/kubeadm_join_cmd.sh .
+    sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.0.254:/etc/kubernetes/pki/ca.crt .
+    sudo mkdir /usr/local/share/ca-certificates/k8/
+    sudo cp ca.crt /usr/local/share/ca-certificates/k8/
+    sudo update-ca-certificates
     sh ./kubeadm_join_cmd.sh
 SCRIPT
 
