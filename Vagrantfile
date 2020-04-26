@@ -94,12 +94,11 @@ $configureMaster = <<-SCRIPT
     cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
     chown $(id -u vagrant):$(id -g vagrant) /home/vagrant/.kube/config
 
-    # install Calico pod network addon
     export KUBECONFIG=/etc/kubernetes/admin.conf
 
+    # install flannel pod network addon
     # https://medium.com/@ErrInDam/taming-kubernetes-for-fun-and-profit-60a1d7b353de
     kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/flannel/flannel.yaml
-    # kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
     kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
     chmod +x /etc/kubeadm_join_cmd.sh
@@ -108,7 +107,9 @@ $configureMaster = <<-SCRIPT
     sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
     sudo service sshd restart
 
-    kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/flannel/flannel.yaml
+    # Install dashboard
+    kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/dashboard/dashboard.yaml
+    kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/dashboard/dashboard-adminuser.yaml
 
 SCRIPT
 
@@ -116,6 +117,8 @@ $configureNode = <<-SCRIPT
     echo "This is worker"
     apt-get install -y sshpass
     sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.0.254:/etc/kubeadm_join_cmd.sh .
+
+    # copy master ca cert and install it
     sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.0.254:/etc/kubernetes/pki/ca.crt .
     sudo mkdir /usr/local/share/ca-certificates/k8/
     sudo cp ca.crt /usr/local/share/ca-certificates/k8/
@@ -130,7 +133,7 @@ Vagrant.configure("2") do |config|
             config.vm.box = opts[:box]
             config.vm.box_version = opts[:box_version]
             config.vm.hostname = opts[:name]
-            # config.vm.network :private_network, ip: opts[:eth1]
+
             # https://stackoverflow.com/questions/12538162/setting-a-vms-mac-address-in-vagrant
             config.vm.network "public_network", bridge: 'enp27s0', mac: opts[:mac]
 
