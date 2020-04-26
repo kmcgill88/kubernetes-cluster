@@ -5,27 +5,40 @@ servers = [
     {
         :name => "k8s-master",
         :type => "master",
+        :mac => "744C14006844",
         :box => "ubuntu/xenial64",
         :box_version => "20200415.0.0",
-        :eth1 => "192.168.205.10",
+        :eth1 => "192.168.0.254",
         :mem => "2048",
         :cpu => "2"
     },
     {
         :name => "k8s-node-1",
         :type => "node",
+        :mac => "CCF5529B70C4",
         :box => "ubuntu/xenial64",
         :box_version => "20200415.0.0",
-        :eth1 => "192.168.205.11",
+        :eth1 => "192.168.0.253",
         :mem => "2048",
         :cpu => "2"
     },
     {
         :name => "k8s-node-2",
         :type => "node",
+        :mac => "C074F9FC7AEC",
         :box => "ubuntu/xenial64",
         :box_version => "20200415.0.0",
-        :eth1 => "192.168.205.12",
+        :eth1 => "192.168.0.252",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "k8s-node-3",
+        :type => "node",
+        :mac => "67A074270D17",
+        :box => "ubuntu/xenial64",
+        :box_version => "20200415.0.0",
+        :eth1 => "192.168.0.251",
         :mem => "2048",
         :cpu => "2"
     }
@@ -35,7 +48,6 @@ servers = [
 $configureBox = <<-SCRIPT
 
     # install docker
-    # reason for not using docker provision is that it always installs latest version of the docker, but kubeadm requires 17.03 or older
     apt-get update
     apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
@@ -87,21 +99,21 @@ $configureMaster = <<-SCRIPT
     kubectl apply -f https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/rbac-kdd.yaml
     kubectl apply -f https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/calico.yaml
 
+    # https://github.com/kubernetes/kubeadm/issues/1031
+    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
     kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
     chmod +x /etc/kubeadm_join_cmd.sh
 
     # required for setting up password less ssh between guest VMs
     sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
     sudo service sshd restart
-
-    # https://github.com/kubernetes/kubeadm/issues/1031
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 SCRIPT
 
 $configureNode = <<-SCRIPT
     echo "This is worker"
     apt-get install -y sshpass
-    sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.205.10:/etc/kubeadm_join_cmd.sh .
+    sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.0.254:/etc/kubeadm_join_cmd.sh .
     sh ./kubeadm_join_cmd.sh
 SCRIPT
 
@@ -112,7 +124,8 @@ Vagrant.configure("2") do |config|
             config.vm.box = opts[:box]
             config.vm.box_version = opts[:box_version]
             config.vm.hostname = opts[:name]
-            config.vm.network :private_network, ip: opts[:eth1]
+            # config.vm.network :private_network, ip: opts[:eth1]
+            config.vm.network "public_network", bridge: 'enp27s0', mac: opts[:mac]
 
             config.vm.provider "virtualbox" do |v|
                 v.name = opts[:name]
