@@ -35,7 +35,7 @@ servers = [
     {
         :name => "k8s-node-3",
         :type => "node",
-        :mac => "67A074270D17",
+        :mac => "AA0BEE86CEC8",
         :box => "ubuntu/xenial64",
         :box_version => "20200415.0.0",
         :eth1 => "192.168.0.251",
