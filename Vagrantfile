@@ -98,7 +98,8 @@ $configureMaster = <<-SCRIPT
     export KUBECONFIG=/etc/kubernetes/admin.conf
 
     # https://medium.com/@ErrInDam/taming-kubernetes-for-fun-and-profit-60a1d7b353de
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/flannel/flannel.yaml
+    # kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
     kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
     chmod +x /etc/kubeadm_join_cmd.sh
@@ -106,6 +107,9 @@ $configureMaster = <<-SCRIPT
     # required for setting up password less ssh between guest VMs
     sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
     sudo service sshd restart
+
+    kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/flannel/flannel.yaml
+
 SCRIPT
 
 $configureNode = <<-SCRIPT
