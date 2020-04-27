@@ -10,7 +10,8 @@ metadata:
   name: "nginx-ingress"
   ownerReferences: []
 spec:
-  externalIPs: []
+  externalIPs: ['192.168.0.254']
+  type: LoadBalancer
   loadBalancerSourceRanges: []
   ports:
   - name: "http"
@@ -23,4 +24,4 @@ spec:
     targetPort: 443
   selector:
       app.kubernetes.io/name: "ingress-nginx"
-  type: "NodePort"
+
