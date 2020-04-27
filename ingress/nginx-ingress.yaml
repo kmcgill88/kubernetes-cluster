@@ -284,7 +284,8 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
-  type: NodePort
+  externalIPs: ['192.168.0.254']
+  type: LoadBalancer
   ports:
     - name: http
       port: 80
@@ -564,7 +565,7 @@ spec:
       containers:
         - name: patch
           image: jettech/kube-webhook-certgen:v1.0.0
-          imagePullPolicy:
+          imagePullPolicy: IfNotPresent
           args:
             - patch
             - --webhook-name=ingress-nginx-admission
