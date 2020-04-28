@@ -6,11 +6,12 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: foo.kevin.local
+  - host: app-city.lan
     http:
       paths:
-      - path: /test
+      - path: /
         pathType: Prefix
         backend:
           serviceName: app-city-service
           servicePort: 80
+
