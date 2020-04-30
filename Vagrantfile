@@ -135,22 +135,22 @@ Vagrant.configure("2") do |config|
             config.vm.hostname = opts[:name]
 
             # https://stackoverflow.com/questions/12538162/setting-a-vms-mac-address-in-vagrant
-            config.vm.network "public_network", bridge: 'enp27s0', mac: opts[:mac]
+            config.vm.network "public_network", auto_config: false, bridge: 'enp27s0', mac: opts[:mac]
 
             # Allow public network traffic ingress on bridge network
             # https://www.vagrantup.com/docs/networking/public_network.html#default-router
             # default router
-            config.vm.provision "shell", run: "always", inline: "route add default gw 192.168.0.1"
+            config.vm.provision "shell", run: "always", inline: "sudo route add default gw 192.168.0.1"
 
             # default router ipv6
             # config.vm.provision "shell", run: "always", inline: "route -A inet6 add default gw fc00::1 eth1"
 
             # delete default gw on enp0s3
-            config.vm.provision "shell", run: "always", inline: "eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'`"
+            config.vm.provision "shell", run: "always", inline: "sudo -s eval $(route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }')"
 
             config.vm.provider "virtualbox" do |v|
                 v.name = opts[:name]
-                v.customize ["modifyvm", :id, "--groups", "/McGillDevTech"]
+                v.customize ["modifyvm", :id, "--groups", "/KubernetesCluster"]
                 v.customize ["modifyvm", :id, "--memory", opts[:mem]]
                 v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
             end
