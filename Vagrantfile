@@ -133,9 +133,8 @@ Vagrant.configure("2") do |config|
             config.vm.box = opts[:box]
             config.vm.box_version = opts[:box_version]
             config.vm.hostname = opts[:name]
-
             # https://stackoverflow.com/questions/12538162/setting-a-vms-mac-address-in-vagrant
-            config.vm.network "public_network", auto_config: false, bridge: 'enp27s0', mac: opts[:mac]
+            config.vm.network "public_network", bridge: 'enp27s0', mac: opts[:mac]
 
             # Allow public network traffic ingress on bridge network
             # https://www.vagrantup.com/docs/networking/public_network.html#default-router
