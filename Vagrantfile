@@ -146,7 +146,7 @@ Vagrant.configure("2") do |config|
             # config.vm.provision "shell", run: "always", inline: "route -A inet6 add default gw fc00::1 eth1"
 
             # delete default gw on enp0s3
-            config.vm.provision "shell", run: "always", inline: "sudo -s eval $(route -n | awk '{ if ($8 =="enp0s3" && $2 != "0.0.0.0") print "route del default gw " $2; }')"
+            config.vm.provision "shell", run: "always", inline: "sudo -s eval $(route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }')"
 
             config.vm.provider "virtualbox" do |v|
                 v.name = opts[:name]
