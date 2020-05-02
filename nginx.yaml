@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: nginx-name
-          image: nginx:1.17.10-alpine
+          image: nginx:alpine
           imagePullPolicy: Always
           ports:
             - containerPort: 80
