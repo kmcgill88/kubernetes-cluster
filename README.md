@@ -3,18 +3,18 @@ A vagrant script for setting up a Kubernetes cluster using Kubeadm
 
 ## Pre-requisites
 
- * **[Vagrant 2.1.4+](https://www.vagrantup.com)**
- * **[Virtualbox 5.2.18+](https://www.virtualbox.org)**
+ * **[Vagrant 2.2.5+](https://www.vagrantup.com)**
+ * **[Virtualbox 6.0+](https://www.virtualbox.org)**
 
 ## How to Run
 
-Execute the following vagrant command to start a new Kubernetes cluster, this will start one master and two nodes:
+Execute the following vagrant command to start a new Kubernetes cluster, this will start one master and three nodes:
 
 ```
 vagrant up
 ```
 
-You can also start invidual machines by vagrant up k8s-head, vagrant up k8s-node-1 and vagrant up k8s-node-2
+You can also start invidual machines by vagrant up k8s-master, vagrant up k8s-node-1 and vagrant up k8s-node-2
 
 If more than two nodes are required, you can edit the servers array in the Vagrantfile
 
@@ -24,8 +24,8 @@ servers = [
         :name => "k8s-node-3",
         :type => "node",
         :box => "ubuntu/xenial64",
-        :box_version => "20180831.0.0",
-        :eth1 => "192.168.205.13",
+        :box_version => "20200415.0.0",
+        :eth1 => "192.168.0.252",
         :mem => "2048",
         :cpu => "2"
     }
