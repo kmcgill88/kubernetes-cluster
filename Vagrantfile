@@ -113,6 +113,7 @@ $configureMaster = <<-SCRIPT
 
     # Manual TODO: Master node needs ip table updated to keep router as default gateway
     # https://askubuntu.com/questions/31646/default-gateway-changing
+    # Add "supersede routers 192.168.0.1;" to "/etc/dhcp/dhclient.conf"
 SCRIPT
 
 $configureNode = <<-SCRIPT
