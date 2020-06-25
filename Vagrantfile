@@ -111,6 +111,8 @@ $configureMaster = <<-SCRIPT
     kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/dashboard/dashboard.yaml
     kubectl apply -f https://raw.githubusercontent.com/kmcgill88/kubernetes-cluster/public-network/dashboard/dashboard-adminuser.yaml
 
+    # Manual TODO: Master node needs ip table updated to keep router as default gateway
+    # https://askubuntu.com/questions/31646/default-gateway-changing
 SCRIPT
 
 $configureNode = <<-SCRIPT
